@@ -194,23 +194,13 @@
   .cross-card p{ font-size:14px; color:var(--text-dim); line-height:1.85; }
   .cross-foot{ text-align:center; margin-top:36px; font-size:14.5px; color:var(--amber-soft); letter-spacing:1px; }
 
-  /* roadmap timeline */
-  .roadmap{ display:grid; grid-template-columns:repeat(4, 1fr); gap:18px; position:relative; }
-  @media (max-width:900px){ .roadmap{ grid-template-columns:1fr 1fr; } }
-  @media (max-width:520px){ .roadmap{ grid-template-columns:1fr; } }
-  .road-step{
-    background:linear-gradient(160deg, rgba(255,235,210,0.07), rgba(255,235,210,0.015));
-    border:1px solid rgba(232,161,92,0.16); border-radius:18px; padding:28px 20px;
-    position:relative;
+  /* roadmap image */
+  .roadmap-image-frame{
+    border-radius:24px; overflow:hidden;
+    border:1px solid rgba(232,161,92,0.22);
+    box-shadow:0 30px 70px -20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06);
   }
-  .road-num{
-    width:38px; height:38px; border-radius:50%; margin-bottom:16px;
-    display:flex; align-items:center; justify-content:center;
-    background:linear-gradient(120deg, var(--amber), var(--coral)); color:#2b1712; font-weight:700; font-size:14px;
-  }
-  .road-step h5{ font-size:16px; color:var(--amber-soft); margin-bottom:10px; letter-spacing:0.5px; }
-  .road-step .road-tag{ font-size:12px; color:var(--text-dim); margin-bottom:10px; letter-spacing:0.5px; }
-  .road-step p{ font-size:13px; color:var(--text-dim); line-height:1.75; }
+  .roadmap-image-frame img{ width:100%; height:auto; display:block; }
   .roadmap-foot{ text-align:center; margin-top:34px; font-size:14px; color:var(--text-dim); letter-spacing:1px; }
 
   /* teaching gallery */
@@ -404,32 +394,8 @@
   <section>
     <div class="container">
       <div class="section-label">Learning Path</div>
-      <div class="section-title">花晶專業系統｜四階學習藍圖</div>
-      <div class="roadmap">
-        <div class="road-step">
-          <div class="road-num">01</div>
-          <h5>天賦變現工作坊</h5>
-          <div class="road-tag">定位：身心入門體驗</div>
-          <p>成果：理解天賦，理解能量如何作用於人生方向</p>
-        </div>
-        <div class="road-step">
-          <div class="road-num">02</div>
-          <h5>初階培訓（花晶執行師）</h5>
-          <div class="road-tag">定位：身體記憶清理 × 能量啟動</div>
-          <p>成果：能量判讀、初階施作、穩定覺察習慣</p>
-        </div>
-        <div class="road-step">
-          <div class="road-num">03</div>
-          <h5>中階培訓（花晶療師）</h5>
-          <div class="road-tag">定位：建立個案結構 × 深化諮詢</div>
-          <p>成果：系統化陪伴、進階手法、彩光＋覺察卡諮詢能力</p>
-        </div>
-        <div class="road-step">
-          <div class="road-num">04</div>
-          <h5>高階講師</h5>
-          <div class="road-tag">定位：整合 SOP × 成為能講能帶的講師</div>
-          <p>成果：職業講師訓練、現場表達、品牌講師能力</p>
-        </div>
+      <div class="roadmap-image-frame">
+        <img src="assets/roadmap.png" alt="花晶專業系統｜四階學習藍圖">
       </div>
       <div class="roadmap-foot">完整四階，為你建立可複製、可操作、可教學的花晶專業系統。</div>
     </div>
