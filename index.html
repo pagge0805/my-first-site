@@ -228,6 +228,46 @@
   .book-info p{ font-size:15px; color:var(--text-dim); line-height:1.9; margin-bottom:14px; }
 
   /* CTA invite */
+  /* guestbook */
+  .guestbook-form{
+    display:flex; flex-direction:column; gap:14px;
+    background:linear-gradient(155deg, rgba(255,235,210,0.07), rgba(255,235,210,0.02));
+    border:1px solid rgba(232,161,92,0.18); border-radius:20px; padding:32px;
+    margin-bottom:40px;
+  }
+  .guestbook-form .row{ display:flex; gap:14px; flex-wrap:wrap; }
+  .guestbook-form input, .guestbook-form textarea{
+    flex:1; min-width:180px;
+    background:rgba(0,0,0,0.18); border:1px solid rgba(232,161,92,0.25); border-radius:12px;
+    padding:13px 16px; color:var(--text-soft); font-family:inherit; font-size:14.5px;
+    outline:none; transition:border-color 0.3s ease;
+  }
+  .guestbook-form input:focus, .guestbook-form textarea:focus{ border-color:var(--amber); }
+  .guestbook-form textarea{ resize:vertical; min-height:70px; width:100%; }
+  .guestbook-form .gb-actions{ display:flex; align-items:center; gap:14px; }
+  .guestbook-form button{
+    border:none; cursor:pointer; font-family:inherit;
+    background:linear-gradient(120deg, var(--amber), var(--coral));
+    color:#2b1712; font-weight:700; font-size:14px; letter-spacing:2px;
+    padding:13px 30px; border-radius:999px;
+    box-shadow:0 15px 35px -10px rgba(224,120,86,0.5);
+    transition:transform 0.3s ease;
+  }
+  .guestbook-form button:hover{ transform:translateY(-2px); }
+  .guestbook-form button:disabled{ opacity:0.6; cursor:not-allowed; transform:none; }
+  .gb-status{ font-size:13px; color:var(--text-dim); }
+  .gb-status.error{ color:var(--coral); }
+  .guestbook-list{ display:flex; flex-direction:column; gap:16px; }
+  .gb-entry{
+    background:linear-gradient(160deg, rgba(255,235,210,0.06), rgba(255,235,210,0.015));
+    border:1px solid rgba(232,161,92,0.14); border-radius:16px; padding:20px 24px;
+  }
+  .gb-entry .gb-head{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:8px; flex-wrap:wrap; }
+  .gb-entry .gb-name{ font-size:15px; color:var(--amber-soft); font-weight:600; letter-spacing:0.5px; }
+  .gb-entry .gb-time{ font-size:12px; color:var(--text-dim); opacity:0.7; }
+  .gb-entry .gb-message{ font-size:14.5px; color:var(--text-soft); line-height:1.8; white-space:pre-wrap; word-break:break-word; }
+  .gb-empty{ text-align:center; color:var(--text-dim); font-size:14px; padding:20px; }
+
   .invite-card{
     text-align:center; padding:56px 40px; border-radius:28px;
     background:linear-gradient(160deg, rgba(232,161,92,0.16), rgba(224,120,86,0.08));
@@ -493,6 +533,30 @@
     </div>
   </section>
 
+  <!-- Guestbook -->
+  <section id="guestbook">
+    <div class="container narrow">
+      <div class="section-label">Guestbook</div>
+      <div class="section-title">留言板</div>
+      <div class="section-desc">歡迎留下您的名字和一句話，讓我知道您來過。</div>
+
+      <form class="guestbook-form" id="gb-form">
+        <div class="row">
+          <input type="text" id="gb-name" placeholder="您的名字" maxlength="40" required>
+        </div>
+        <textarea id="gb-message" placeholder="想對我說的話……" maxlength="300" required></textarea>
+        <div class="gb-actions">
+          <button type="submit" id="gb-submit">送出留言</button>
+          <span class="gb-status" id="gb-status"></span>
+        </div>
+      </form>
+
+      <div class="guestbook-list" id="gb-list">
+        <div class="gb-empty">載入留言中…</div>
+      </div>
+    </div>
+  </section>
+
   <!-- Footer / contact -->
   <footer id="contact">
     <div class="container">
@@ -508,5 +572,96 @@
     </div>
   </footer>
 
+  <script>
+    function formatTime(iso) {
+      const d = new Date(iso.replace(' ', 'T') + 'Z');
+      return d.toLocaleString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function renderMessages(list) {
+      const el = document.getElementById('gb-list');
+      el.innerHTML = '';
+      if (!list.length) {
+        const empty = document.createElement('div');
+        empty.className = 'gb-empty';
+        empty.textContent = '目前還沒有留言，成為第一位留言的人吧！';
+        el.appendChild(empty);
+        return;
+      }
+      for (const item of list) {
+        const entry = document.createElement('div');
+        entry.className = 'gb-entry';
+
+        const head = document.createElement('div');
+        head.className = 'gb-head';
+
+        const name = document.createElement('span');
+        name.className = 'gb-name';
+        name.textContent = item.name;
+
+        const time = document.createElement('span');
+        time.className = 'gb-time';
+        time.textContent = formatTime(item.created_at);
+
+        head.appendChild(name);
+        head.appendChild(time);
+
+        const msg = document.createElement('div');
+        msg.className = 'gb-message';
+        msg.textContent = item.message;
+
+        entry.appendChild(head);
+        entry.appendChild(msg);
+        el.appendChild(entry);
+      }
+    }
+
+    async function loadMessages() {
+      try {
+        const res = await fetch('/api/messages');
+        const data = await res.json();
+        renderMessages(data);
+      } catch (err) {
+        document.getElementById('gb-list').innerHTML = '<div class="gb-empty">留言載入失敗，請稍後重新整理頁面。</div>';
+      }
+    }
+
+    const form = document.getElementById('gb-form');
+    const statusEl = document.getElementById('gb-status');
+    const submitBtn = document.getElementById('gb-submit');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('gb-name').value.trim();
+      const message = document.getElementById('gb-message').value.trim();
+      if (!name || !message) return;
+
+      submitBtn.disabled = true;
+      statusEl.textContent = '送出中…';
+      statusEl.className = 'gb-status';
+
+      try {
+        const res = await fetch('/api/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, message })
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || '送出失敗');
+        }
+        form.reset();
+        statusEl.textContent = '留言成功！';
+        await loadMessages();
+      } catch (err) {
+        statusEl.textContent = err.message || '送出失敗，請再試一次。';
+        statusEl.className = 'gb-status error';
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+
+    loadMessages();
+  </script>
 </body>
 </html>
